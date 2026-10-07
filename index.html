@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11111b">
+  <title>Bunniezzz — Tổng quan bot Discord</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #11111b;
+      --panel: #1b1b29;
+      --panel-2: #222234;
+      --line: #343448;
+      --text: #f4f1fa;
+      --muted: #b2aec2;
+      --pink: #f3a6cb;
+      --purple: #b7a1ff;
+      --green: #a5e3c2;
+      --amber: #ffd58a;
+      --red: #ff9b9b;
+    }
+    .snow-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 4;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: .58;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 85% 0%, #53304a55, transparent 36rem),
+        radial-gradient(ellipse at 5% 18%, #44376b44, transparent 32rem),
+        var(--bg);
+      color: var(--text);
+      font: 15px/1.65 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--pink); }
+    code, .code {
+      color: #ffd6e9;
+      background: #302536;
+      border: 1px solid #513548;
+      border-radius: 6px;
+      padding: .12rem .38rem;
+      font: .92em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      overflow-wrap: anywhere;
+    }
+    .wrap { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+    header { padding: 58px 0 30px; }
+    .eyebrow {
+      color: var(--pink);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 760px;
+      margin: 10px 0 12px;
+      font-size: clamp(2.2rem, 7vw, 4.6rem);
+      line-height: 1.04;
+      letter-spacing: -.055em;
+    }
+    .lede { max-width: 720px; color: var(--muted); font-size: 1.08rem; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 26px 0 18px;
+    }
+    .stat, .panel, .command-card {
+      background: linear-gradient(145deg, #222233ee, #191925f2);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 14px 36px #00000022;
+    }
+    .stat { padding: 17px 19px; }
+    .stat strong { display: block; font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.1; }
+    .stat span { color: var(--muted); font-size: .9rem; }
+    .stat:nth-child(1) strong { color: var(--pink); }
+    .stat:nth-child(2) strong { color: var(--purple); }
+    .stat:nth-child(3) strong { color: var(--green); }
+    .scope { color: var(--muted); font-size: .88rem; }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      padding: 10px 0;
+      background: #11111beF;
+      border-block: 1px solid #343448aa;
+      backdrop-filter: blur(14px);
+    }
+    .nav-inner { display: flex; flex-wrap: wrap; gap: 8px; }
+    nav a, .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--text);
+      text-decoration: none;
+      font-size: .88rem;
+    }
+    nav a:hover, .filter-chip:hover { border-color: var(--pink); }
+    main { padding: 22px 0 60px; }
+    section { scroll-margin-top: 76px; margin: 28px 0; }
+    h2 { font-size: clamp(1.5rem, 4vw, 2rem); margin: 0 0 8px; letter-spacing: -.025em; }
+    h3 { margin: 0 0 8px; font-size: 1.1rem; }
+    .section-lede, .muted { color: var(--muted); }
+    .panel { padding: 20px; }
+    .note {
+      border-left: 4px solid var(--amber);
+      background: #332b1b;
+      border-radius: 12px;
+      padding: 15px 17px;
+      margin: 14px 0;
+    }
+    .danger {
+      border-left-color: var(--red);
+      background: #351f29;
+    }
+    .good {
+      border-left-color: var(--green);
+      background: #1b302b;
+    }
+    .note p { margin: 5px 0; }
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .quick-grid .panel { height: 100%; }
+    .tokens { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 16px 0;
+    }
+    input[type="search"] {
+      flex: 1 1 250px;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 9px 13px;
+      background: var(--panel);
+      color: var(--text);
+      font: inherit;
+    }
+    .filter-chip { cursor: pointer; font: inherit; }
+    .filter-chip[aria-pressed="true"] { border-color: var(--pink); background: #382b3a; }
+    .command-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .command-card { padding: 15px 16px; min-width: 0; }
+    .command-top { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; }
+    .command-name { margin: 0; font: 700 1rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+    .badge {
+      flex: 0 0 auto;
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: .72rem;
+      font-weight: 750;
+      background: #353044;
+      color: var(--purple);
+    }
+    .badge.prefix { color: var(--green); background: #20372f; }
+    .command-card p { margin: 8px 0; }
+    .usage { color: var(--muted); font-size: .9rem; }
+    .alias { color: var(--amber); font-size: .82rem; }
+    .empty { display: none; padding: 24px; color: var(--muted); text-align: center; }
+    @media (max-width: 720px) {
+      header { padding-top: 38px; }
+      .stats { grid-template-columns: 1fr; }
+      .quick-grid, .command-list { grid-template-columns: 1fr; }
+      .stat { padding: 14px 16px; }
+      .stat strong { font-size: 1.8rem; }
+    }
+    @media print {
+      :root { color-scheme: light; --bg: white; --text: #17131b; --muted: #4b4650; --panel: #fff; --line: #ccc; }
+      body { background: white; color: #17131b; }
+      .snow-layer { display: none; }
+      nav, .toolbar { display: none; }
+      .stat, .panel, .command-card { background: white; box-shadow: none; break-inside: avoid; }
+      .command-list { grid-template-columns: 1fr 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .snow-layer { display: none; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="snow" class="snow-layer" aria-hidden="true"></canvas>
+  <audio id="background-music" autoplay loop preload="auto" hidden>
+    <source src="./bunniezzz_bg_music.mp3" type="audio/mpeg">
+  </audio>
+  <header class="wrap">
+    <div class="eyebrow">Discord bot · Hướng dẫn sử dụng</div>
+    <h1>Bunniezzz</h1>
+    <p class="lede">Tổng quan mã nguồn, danh sách slash/prefix command, cú pháp cơ bản và các lưu ý để vận hành bot an toàn trong server.</p>
+    <div class="stats" aria-label="Thống kê mã nguồn và lệnh">
+      <div class="stat"><strong>5.095</strong><span>dòng trong file Python sau cập nhật (tính cả dòng trống và comment)</span></div>
+      <div class="stat"><strong>23</strong><span>slash commands đã đăng ký trong mã nguồn</span></div>
+      <div class="stat"><strong>26</strong><span>prefix commands đã đăng ký trong mã nguồn</span></div>
+    </div>
+    <p class="scope">Tổng cộng <b>49 command</b>. Alias như <code>?help</code>, <code>?avatar</code>, <code>?clean</code> và <code>?xoa</code> được ghi kèm lệnh chính, không tính thành command riêng. Prefix mặc định là <code>?</code>, có thể đổi riêng cho server bằng <code>/prefix</code>.</p>
+  </header>
+
+  <nav>
+    <div class="wrap nav-inner">
+      <a href="#safety">An toàn</a>
+      <a href="#embed">Embed & thumbnail</a>
+      <a href="#slash">Slash commands</a>
+      <a href="#prefix">Prefix commands</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="safety">
+      <h2>Lưu ý an toàn</h2>
+      <p class="section-lede">Các lệnh quản trị và cấu hình có thể thay đổi quyền, nội dung hoặc hoạt động của server.</p>
+      <div class="note danger">
+        <p><strong>Không cấp quyền dùng bot tùy tiện.</strong> Chỉ cấp cho người bạn tin tưởng và hiểu rõ tác động của lệnh. Đặc biệt thận trọng với <code>/owner</code>, <code>/usebot</code>, <code>/send</code>, các lệnh moderation, <code>/embed</code> và <code>?steal</code>.</p>
+        <p>Không cấp quyền owner hoặc <code>/usebot permission:1</code> cho người không đáng tin. Permission mức 2 cũng cho phép một số thao tác như mute/unmute, khóa mõm và quản lý role.</p>
+      </div>
+      <div class="quick-grid">
+        <div class="panel">
+          <h3>Cấp quyền có chủ đích</h3>
+          <p><code>/owner action:list</code> xem danh sách owner; <code>/owner action:add</code> và <code>del</code> thay đổi danh sách. <code>/usebot action:list</code> xem quyền đã cấp; dùng <code>add</code>/<code>del</code> để chỉnh một role hoặc thành viên.</p>
+          <p class="muted">Cấp đúng người, đúng mức cần thiết; rà soát lại danh sách khi thành viên rời server hoặc không còn cần quyền.</p>
+        </div>
+        <div class="panel">
+          <h3>Giới hạn quyền Discord của bot</h3>
+          <p>Chỉ bật các quyền Discord bot thật sự cần. Lệnh kick/ban, quản lý role, xóa tin nhắn, gửi embed và vào voice yêu cầu quyền tương ứng; hierarchy role cũng ảnh hưởng kết quả.</p>
+          <p class="muted">Không chia sẻ token bot, không dán token vào chat, và không mời bot vào server lạ hoặc server không được kiểm soát.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="embed">
+      <h2>Embed: cách tạo và dùng thumbnail</h2>
+      <div class="panel">
+        <p>Quản lý embed đã lưu bằng slash command. Thao tác tạo/sửa mở biểu mẫu; sau khi lưu, dùng <code>/sendembed</code> để gửi embed vào kênh.</p>
+        <div class="tokens">
+          <span class="code">/embed action:create name:Thông báo</span>
+          <span class="code">/embed action:edit name:Thông báo</span>
+          <span class="code">/embed action:list</span>
+          <span class="code">/sendembed name:Thông báo channel:#general</span>
+        </div>
+        <p>Trong biểu mẫu <code>/embed</code>, trường <b>Thumbnail</b> dùng để đặt ảnh nhỏ ở góc embed; nhập URL hoặc một trong các biến dưới đây:</p>
+        <div class="tokens">
+          <span class="code">{thumbnail.server}</span>
+          <span class="code">{thumbnail.user}</span>
+        </div>
+        <p><code>{thumbnail.server}</code> lấy icon server hiện tại; <code>{thumbnail.user}</code> lấy avatar người được nhắc trong embed. Khi embed được gửi tự động theo sự kiện thành viên, đó là avatar/icon tương ứng lúc gửi. Nếu server chưa có icon hoặc không có user phù hợp, thumbnail có thể để trống.</p>
+        <p>Trường <b>URL ảnh/GIF cuối embed</b> nhận URL trực tiếp của ảnh hoặc GIF, ví dụ <code>https://example.com/anh.gif</code>; ảnh sẽ hiển thị ở phần cuối embed. Bạn có thể điền URL này cùng thumbnail. URL cần bắt đầu bằng <code>http://</code> hoặc <code>https://</code>.</p>
+      </div>
+      <div class="note good">
+        <p><strong>Placeholder nội dung hiện có:</strong> <code>{user}</code>, <code>{username}</code>, <code>{userid}</code>, <code>{time}</code>, <code>{server}</code>/<code>{guild}</code>, <code>{membercount}</code>/<code>{member_count}</code>. Trong auto-reply có thể dùng <code>{embed:tên}</code> để chèn embed đã lưu.</p>
+      </div>
+    </section>
+
+    <section id="slash">
+      <h2>Slash commands</h2>
+      <p class="section-lede">Gõ dấu <code>/</code> trong Discord rồi chọn command và các trường hiện trong menu. Các tuỳ chọn được Discord gợi ý sẽ giúp hạn chế nhập sai.</p>
+      <div id="slash-list" class="command-list" aria-live="polite"></div>
+    </section>
+
+    <section id="prefix">
+      <h2>Prefix commands</h2>
+      <p class="section-lede">Prefix mặc định là <code>?</code>; ví dụ <code>?menu</code>. Nếu server đã đổi prefix, thay dấu <code>?</code> bằng prefix hiện tại. Dùng <code>/prefix</code> để đặt prefix mới hoặc nhập <code>?</code> để khôi phục mặc định.</p>
+      <div class="toolbar" role="search">
+        <input id="search" type="search" placeholder="Tìm lệnh hoặc chức năng…" aria-label="Tìm lệnh">
+        <button class="filter-chip" type="button" data-filter="all" aria-pressed="true">Tất cả</button>
+        <button class="filter-chip" type="button" data-filter="slash" aria-pressed="false">Slash</button>
+        <button class="filter-chip" type="button" data-filter="prefix" aria-pressed="false">Prefix</button>
+      </div>
+      <p id="result-count" class="muted"></p>
+      <div id="prefix-list" class="command-list" aria-live="polite"></div>
+      <div id="empty" class="empty">Không tìm thấy lệnh phù hợp.</div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const audio = document.getElementById("background-music");
+      if (!audio) return;
+      const tryPlay = () => audio.play().catch(() => {});
+      tryPlay();
+      document.addEventListener("pointerdown", tryPlay, { once: true });
+      document.addEventListener("keydown", tryPlay, { once: true });
+    })();
+
+    (() => {
+      const canvas = document.getElementById("snow");
+      const context = canvas && canvas.getContext("2d");
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!canvas || !context || prefersReducedMotion) return;
+
+      let width = 0;
+      let height = 0;
+      let flakes = [];
+      let animationFrame = 0;
+      const random = (min, max) => Math.random() * (max - min) + min;
+
+      function resizeSnow() {
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = Math.round(width * ratio);
+        canvas.height = Math.round(height * ratio);
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        const amount = Math.min(100, Math.max(28, Math.floor(width / 13)));
+        flakes = Array.from({ length: amount }, () => ({
+          x: random(0, width),
+          y: random(0, height),
+          radius: random(1, 3),
+          speed: random(.45, 1.35),
+          drift: random(-.28, .28),
+          phase: random(0, Math.PI * 2),
+          alpha: random(.25, .75)
+        }));
+      }
+
+      function drawSnow() {
+        context.clearRect(0, 0, width, height);
+        for (const flake of flakes) {
+          flake.phase += .012;
+          flake.y += flake.speed;
+          flake.x += flake.drift + Math.sin(flake.phase) * .22;
+          if (flake.y > height + flake.radius) {
+            flake.y = -flake.radius;
+            flake.x = random(0, width);
+          }
+          if (flake.x < -5) flake.x = width + 5;
+          if (flake.x > width + 5) flake.x = -5;
+          context.beginPath();
+          context.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+          context.fillStyle = `rgba(255, 248, 255, ${flake.alpha})`;
+          context.fill();
+        }
+        animationFrame = window.requestAnimationFrame(drawSnow);
+      }
+
+      resizeSnow();
+      drawSnow();
+      window.addEventListener("resize", resizeSnow, { passive: true });
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          window.cancelAnimationFrame(animationFrame);
+        } else if (!prefersReducedMotion) {
+          animationFrame = window.requestAnimationFrame(drawSnow);
+        }
+      });
+    })();
+
+    const commands = [
+      {type:"slash", name:"/embed", desc:"Tạo, sửa, xóa hoặc xem danh sách embed đã lưu.", usage:"/embed action:<create|edit|delete|list> [name:TÊN]", category:"Embed"},
+      {type:"slash", name:"/sendembed", desc:"Gửi embed đã lưu vào một kênh.", usage:"/sendembed name:TÊN channel:#KÊNH", category:"Embed"},
+      {type:"slash", name:"/pickrole", desc:"Thêm, sửa, xóa, liệt kê hoặc gửi bảng role tự chọn.", usage:"/pickrole action:<add|edit|del|list|send> [role] [name] [emoji] [group] [channel]", category:"Cấu hình server"},
+      {type:"slash", name:"/setboostrole", desc:"Chọn role tự cấp khi thành viên boost và gỡ khi ngừng boost.", usage:"/setboostrole role:@ROLE", category:"Cấu hình server"},
+      {type:"slash", name:"/setfeedback", desc:"Chọn kênh feedback hoặc nơi nhận lệnh +1stock.", usage:"/setfeedback channel:#KÊNH", category:"Cấu hình server"},
+      {type:"slash", name:"/setfbemoji", desc:"Cài 3 emoji bot tự thả cho feedback/+1stock.", usage:"/setfbemoji emoji1:EMOJI emoji2:EMOJI emoji3:EMOJI", category:"Cấu hình server"},
+      {type:"slash", name:"/usebot", desc:"Cấp, thu hồi hoặc xem quyền bot theo role/thành viên; mức 1 toàn quyền, mức 2 chỉ một số lệnh quản trị.", usage:"/usebot action:<add|del|list> [target_role hoặc target_user] [permission:<1|2>]", category:"Quyền & quản trị"},
+      {type:"slash", name:"/test", desc:"Thử gửi thông báo chào mừng, tạm biệt hoặc boost.", usage:"/test loai:<wlc|bye|boost>", category:"Cấu hình server"},
+      {type:"slash", name:"/owner", desc:"Thêm, xóa hoặc xem danh sách owner của bot trong server.", usage:"/owner action:<add|del|list> [user:@THÀNH_VIÊN]", category:"Quyền & quản trị"},
+      {type:"slash", name:"/setprofile", desc:"Đổi tên, avatar, banner riêng của bot trong server hoặc đặt lại.", usage:"/setprofile [name] [avatar] [banner] [reset:yes]", category:"Cấu hình server"},
+      {type:"slash", name:"/info", desc:"Xem thông tin người dùng.", usage:"/info [user:@THÀNH_VIÊN]", category:"Tiện ích"},
+      {type:"slash", name:"/prefix", desc:"Đổi prefix của bot trong server; dùng ? để khôi phục mặc định.", usage:"/prefix change:KÝ_TỰ", category:"Cấu hình server"},
+      {type:"slash", name:"/color", desc:"Đổi màu embed của bot hoặc đặt lại màu mặc định.", usage:"/color hex_color:#5865F2 (hoặc reset)", category:"Cấu hình server"},
+      {type:"slash", name:"/status", desc:"Cấu hình trạng thái tĩnh hoặc trạng thái luân phiên.", usage:"/status loai:<static|dynamic>", category:"Cấu hình server"},
+      {type:"slash", name:"/send", desc:"Gửi nội dung do người gọi chỉ định vào kênh.", usage:"/send channel:#KÊNH message:NỘI_DUNG", category:"Quyền & quản trị"},
+      {type:"slash", name:"/setwlc", desc:"Chọn embed đã lưu và kênh thông báo thành viên mới.", usage:"/setwlc embed_name:TÊN channel:#KÊNH", category:"Cấu hình server"},
+      {type:"slash", name:"/setwlclinks", desc:"Cài hoặc xóa các nút Rules và Stock dưới embed chào mừng.", usage:"/setwlclinks [rules_url:URL] [stock_url:URL]", category:"Cấu hình server"},
+      {type:"slash", name:"/setbye", desc:"Chọn embed đã lưu và kênh thông báo thành viên rời server.", usage:"/setbye embed_name:TÊN channel:#KÊNH", category:"Cấu hình server"},
+      {type:"slash", name:"/setboost", desc:"Chọn embed đã lưu và kênh thông báo thành viên boost.", usage:"/setboost embed_name:TÊN channel:#KÊNH", category:"Cấu hình server"},
+      {type:"slash", name:"/menu", desc:"Hiển thị menu lệnh cơ bản trong Discord.", usage:"/menu", category:"Tiện ích"},
+      {type:"slash", name:"/autoreply", desc:"Thêm, xóa hoặc xem auto-reply; kiểu khớp chính xác hoặc chứa từ khóa.", usage:"/autoreply action:<add|del|list> [kieu:<exact|include>] [keyword] [response]", category:"Tự động hóa"},
+      {type:"slash", name:"/nhay", desc:"Gửi tin nhắn lặp đến kênh hoặc DM theo lựa chọn và kiểu chữ.", usage:"/nhay user:@THÀNH_VIÊN option:<channel|dm> [channel] [kieu_van_ban]", category:"Tiện ích"},
+      {type:"slash", name:"/stopnhay", desc:"Dừng tác vụ nhây tin nhắn đang chạy.", usage:"/stopnhay", category:"Tiện ích"},
+
+      {type:"prefix", name:"?info", desc:"Xem thông tin người dùng; có thể bỏ qua mục tiêu để xem bản thân.", usage:"?info [@THÀNH_VIÊN]", category:"Tiện ích"},
+      {type:"prefix", name:"?ping", desc:"Kiểm tra độ trễ bot.", usage:"?ping", category:"Tiện ích"},
+      {type:"prefix", name:"?av", desc:"Xem avatar người dùng; có alias ?avatar.", usage:"?av [@THÀNH_VIÊN]", aliases:"?avatar", category:"Tiện ích"},
+      {type:"prefix", name:"?banner", desc:"Xem banner người dùng.", usage:"?banner [@THÀNH_VIÊN]", category:"Tiện ích"},
+      {type:"prefix", name:"?khoamom", desc:"Khóa mõm thành viên theo cơ chế của bot.", usage:"?khoamom @THÀNH_VIÊN", category:"Kiểm duyệt"},
+      {type:"prefix", name:"?mokhoa", desc:"Mở khóa mõm thành viên.", usage:"?mokhoa @THÀNH_VIÊN", category:"Kiểm duyệt"},
+      {type:"prefix", name:"?ban", desc:"Ban thành viên; có thể kèm lý do.", usage:"?ban @THÀNH_VIÊN [lý do]", category:"Kiểm duyệt"},
+      {type:"prefix", name:"?unban", desc:"Gỡ ban theo Discord user ID.", usage:"?unban USER_ID", category:"Kiểm duyệt"},
+      {type:"prefix", name:"?kick", desc:"Kick thành viên; có thể kèm lý do.", usage:"?kick @THÀNH_VIÊN [lý do]", category:"Kiểm duyệt"},
+      {type:"prefix", name:"?purge", desc:"Xóa số lượng tin nhắn được chỉ định; alias ?clean và ?xoa.", usage:"?purge SỐ_LƯỢNG", aliases:"?clean · ?xoa", category:"Kiểm duyệt"},
+      {type:"prefix", name:"?lock", desc:"Khóa kênh hiện tại.", usage:"?lock", category:"Kiểm duyệt"},
+      {type:"prefix", name:"?unlock", desc:"Mở khóa kênh hiện tại.", usage:"?unlock", category:"Kiểm duyệt"},
+      {type:"prefix", name:"?mute", desc:"Mute thành viên; mặc định 30 giây nếu không nhập thời lượng.", usage:"?mute @THÀNH_VIÊN [thời_lượng] [lý do]", category:"Kiểm duyệt"},
+      {type:"prefix", name:"?unmute", desc:"Gỡ mute thành viên.", usage:"?unmute @THÀNH_VIÊN", category:"Kiểm duyệt"},
+      {type:"prefix", name:"?role", desc:"Thêm hoặc xóa role cho thành viên theo tên/role được chọn.", usage:"?role @THÀNH_VIÊN TÊN_ROLE", category:"Kiểm duyệt"},
+      {type:"prefix", name:"?join", desc:"Cho bot vào voice channel của người gọi.", usage:"?join", category:"Âm nhạc"},
+      {type:"prefix", name:"?leave", desc:"Cho bot rời voice channel.", usage:"?leave", category:"Âm nhạc"},
+      {type:"prefix", name:"?play", desc:"Phát nhạc từ truy vấn hoặc URL hỗ trợ.", usage:"?play TÊN_BÀI_HÁT_HOẶC_URL", category:"Âm nhạc"},
+      {type:"prefix", name:"?playlist", desc:"Xem danh sách phát trong server.", usage:"?playlist", category:"Âm nhạc"},
+      {type:"prefix", name:"?pause", desc:"Tạm dừng phát nhạc.", usage:"?pause", category:"Âm nhạc"},
+      {type:"prefix", name:"?resume", desc:"Tiếp tục phát nhạc.", usage:"?resume", category:"Âm nhạc"},
+      {type:"prefix", name:"?skip", desc:"Bỏ qua bài hiện tại.", usage:"?skip", category:"Âm nhạc"},
+      {type:"prefix", name:"?stop", desc:"Dừng phát nhạc.", usage:"?stop", category:"Âm nhạc"},
+      {type:"prefix", name:"?clear", desc:"Xóa danh sách phát.", usage:"?clear", category:"Âm nhạc"},
+      {type:"prefix", name:"?steal", desc:"Thêm emoji/sticker từ tin nhắn được reply; có giới hạn quyền truy cập.", usage:"Reply một tin nhắn có emoji hoặc sticker rồi gọi ?steal", category:"Tiện ích"},
+      {type:"prefix", name:"?menu", desc:"Hiển thị menu lệnh; alias ?help.", usage:"?menu", aliases:"?help", category:"Tiện ích"}
+    ];
+
+    const search = document.getElementById("search");
+    const lists = {
+      slash: document.getElementById("slash-list"),
+      prefix: document.getElementById("prefix-list")
+    };
+    const empty = document.getElementById("empty");
+    const count = document.getElementById("result-count");
+    let activeFilter = "all";
+
+    function makeCard(item) {
+      const card = document.createElement("article");
+      card.className = "command-card";
+      card.dataset.type = item.type;
+      const top = document.createElement("div");
+      top.className = "command-top";
+      const title = document.createElement("h3");
+      title.className = "command-name";
+      title.textContent = item.name;
+      const badge = document.createElement("span");
+      badge.className = "badge " + item.type;
+      badge.textContent = item.type === "slash" ? "SLASH" : "PREFIX";
+      top.append(title, badge);
+      const desc = document.createElement("p");
+      desc.textContent = item.desc;
+      const usage = document.createElement("p");
+      usage.className = "usage";
+      usage.innerHTML = "<b>Cách dùng:</b> ";
+      const code = document.createElement("code");
+      code.textContent = item.usage;
+      usage.append(code);
+      card.append(top, desc, usage);
+      if (item.aliases) {
+        const aliases = document.createElement("p");
+        aliases.className = "alias";
+        aliases.textContent = "Alias: " + item.aliases;
+        card.append(aliases);
+      }
+      return card;
+    }
+
+    function render() {
+      lists.slash.replaceChildren();
+      lists.prefix.replaceChildren();
+      const query = search.value.trim().toLocaleLowerCase("vi");
+      const shown = commands.filter(item => {
+        const matchesType = activeFilter === "all" || item.type === activeFilter;
+        const haystack = [item.name, item.desc, item.usage, item.category, item.aliases || ""].join(" ").toLocaleLowerCase("vi");
+        return matchesType && haystack.includes(query);
+      });
+      shown.forEach(item => lists[item.type].append(makeCard(item)));
+      lists.slash.hidden = activeFilter === "prefix";
+      lists.prefix.hidden = activeFilter === "slash";
+      empty.style.display = shown.length ? "none" : "block";
+      count.textContent = `Hiển thị ${shown.length} / ${commands.length} lệnh`;
+    }
+
+    document.querySelectorAll(".filter-chip").forEach(button => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+        document.querySelectorAll(".filter-chip").forEach(chip => chip.setAttribute("aria-pressed", String(chip === button)));
+        render();
+      });
+    });
+    search.addEventListener("input", render);
+    render();
+  </script>
+</body>
+</html>
